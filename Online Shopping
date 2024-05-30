@@ -1,0 +1,161 @@
+// Product.java
+package com.ecommerce;
+
+public class Product {
+    private int productID;
+    private String name;
+    private double price;
+
+    public Product(int productID, String name, double price) {
+        this.productID = productID;
+        this.name = name;
+        this.price = price;
+    }
+
+    // Getters and setters
+    public int getProductID() {
+        return productID;
+    }
+
+    public void setProductID(int productID) {
+        this.productID = productID;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+}
+
+
+// Customer.java
+package com.ecommerce;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Customer {
+    private int customerID;
+    private String name;
+    private List<Product> shoppingCart;
+
+    public Customer(int customerID, String name) {
+        this.customerID = customerID;
+        this.name = name;
+        this.shoppingCart = new ArrayList<>();
+    }
+
+    // Add product to shopping cart
+    public void addToCart(Product product) {
+        shoppingCart.add(product);
+    }
+
+    // Remove product from shopping cart
+    public void removeFromCart(Product product) {
+        shoppingCart.remove(product);
+    }
+
+    // Calculate total cost of items in the shopping cart
+    public double calculateTotal() {
+        double total = 0;
+        for (Product product : shoppingCart) {
+            total += product.getPrice();
+        }
+        return total;
+    }
+
+    // Method to place order
+    public void placeOrder() {
+        Order order = new Order(this, shoppingCart);
+        order.generateSummary();
+        order.updateStatus("Placed");
+        shoppingCart.clear(); // Clear the shopping cart after placing order
+    }
+}
+
+// Order.java
+package com.ecommerce.orders;
+
+import com.ecommerce.Customer;
+import com.ecommerce.Product;
+
+import java.util.List;
+
+public class Order {
+    private static int orderCounter = 0; // Counter to generate unique order IDs
+    private int orderID;
+    private Customer customer;
+    private List<Product> products;
+    private double total;
+
+    public Order(Customer customer, List<Product> products) {
+        this.orderID = ++orderCounter;
+        this.customer = customer;
+        this.products = products;
+        this.total = calculateTotal();
+    }
+
+    // Calculate total cost of the order
+    private double calculateTotal() {
+        double total = 0;
+        for (Product product : products) {
+            total += product.getPrice();
+        }
+        return total;
+    }
+
+    // Generate order summary
+    public void generateSummary() {
+        System.out.println("Order ID: " + orderID);
+        System.out.println("Customer: " + customer.getName());
+        System.out.println("Products:");
+        for (Product product : products) {
+            System.out.println( product.getName() + ": $" + product.getPrice());
+        }
+        System.out.println("Total: $" + total);
+    }
+
+    // Update order status
+    public void updateStatus(String status) {
+        System.out.println("Order " + orderID + " status updated: " + status);
+    }
+}
+
+// MainProgram.java
+import com.ecommerce.Customer;
+import com.ecommerce.Product;
+import com.ecommerce.orders.Order;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class MainProgram {
+    public static void main(String[] args) {
+        // Creating products
+        Product book = new Product(1, "Book", 5);
+        Product pencil = new Product(2, "Pencil", 3);
+        Product eraser = new Product(3, "Eraser", 1);
+
+        // Creating a customer
+        Customer customer = new Customer(1, "Tiffany");
+
+        // Adding products to the shopping cart
+        customer.addToCart(book);
+        customer.addToCart(pencil);
+        customer.addToCart(eraser);
+
+        // Placing an order
+        customer.placeOrder();
+    }
+}
